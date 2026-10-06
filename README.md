@@ -1,4 +1,4 @@
 # M5BO-TowerDefense
 
 ## CURRENT FEATURES:
-### None
+### Towers are placeable (one is a placeholder)
