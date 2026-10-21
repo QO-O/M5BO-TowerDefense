@@ -78,7 +78,7 @@ void SetEntityOrder(Transform root, int offset)
         sortingGroup.sortingOrder = offset - (int)(root.position.y * 100);
         return;
     }
-    // fallback: set every child SpriteRenderer
+    // fallback
     foreach (var sr in root.GetComponentsInChildren<SpriteRenderer>())
         sr.sortingOrder = offset - (int)(root.position.y * 100);
 }
