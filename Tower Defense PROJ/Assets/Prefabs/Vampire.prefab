@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8655068547207611391}
   - component: {fileID: 6281436290167854655}
   - component: {fileID: -8269817092335356798}
+  - component: {fileID: 2931749572899930308}
   m_Layer: 0
   m_Name: Vampire
   m_TagString: Untagged
@@ -105,3 +106,19 @@ SortingGroup:
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
+--- !u!114 &2931749572899930308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913565442429541375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6a3fea526f0abb48b91dfdbe69cb1ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tower
+  range: 3
+  fireInterval: 1
+  damage: 1
+  projectilePrefab: {fileID: 7466788874689528457, guid: db67fbbddebf24949a461accd7ba203e, type: 3}

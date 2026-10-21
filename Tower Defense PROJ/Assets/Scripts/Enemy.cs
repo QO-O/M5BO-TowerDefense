@@ -7,10 +7,17 @@ public class Enemy : MonoBehaviour
     private int currentWayPoint = 0;
 
     public Transform[] waypoints;
-
+    
+    public float maxHealth = 3f;
+    public float health;
     void Start()
     {
         Debug.Log($"{name}: waypoints count = {(waypoints != null ? waypoints.Length : -1)}");
+    }
+
+    void Awake()   // or OnEnable, so it works with pooling later
+    {
+        health = maxHealth;
     }
        void Update()
     {
@@ -30,5 +37,24 @@ public class Enemy : MonoBehaviour
                 Destroy(gameObject);
             }
         }
+
+        //     if (Input.GetKeyDown(KeyCode.K))
+        // {
+        //     foreach (Enemy e in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        //         e.TakeDamage(1f);
+        // }
+    }
+
+    public void TakeDamage(float amount)
+    {
+        health -= amount;
+        if (health <= 0f)
+            Die();
+    }
+
+    void Die()
+    {
+        CurrencyManager.Instance.AddGold(25);
+        Destroy(gameObject);
     }
 }
