@@ -2,24 +2,32 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public float speed = 2f;
+    [SerializeField] private float speed = 2f;
+    [SerializeField] private float maxHealth = 3f;
+    [SerializeField] private int goldReward = 25;
 
     private int currentWayPoint = 0;
+    private Transform[] waypoints;
+    private float health;
 
-    public Transform[] waypoints;
-    
-    public float maxHealth = 3f;
-    public float health;
+    public void SetRoute(Transform[] path)
+    {
+        waypoints = path;
+        currentWayPoint = 0;
+    }
+
+
+    void Awake()
+    {
+        health = maxHealth;
+    }
+
     void Start()
     {
         Debug.Log($"{name}: waypoints count = {(waypoints != null ? waypoints.Length : -1)}");
     }
 
-    void Awake()   // or OnEnable, so it works with pooling later
-    {
-        health = maxHealth;
-    }
-       void Update()
+    void Update()
     {
         if (waypoints == null || waypoints.Length == 0) return;
 
@@ -28,11 +36,11 @@ public class Enemy : MonoBehaviour
 
         transform.position += dir * speed * Time.deltaTime;
 
-        if(Vector3.Distance(transform.position, target.position) < 0.05f)
+        if (Vector3.Distance(transform.position, target.position) < 0.05f)
         {
             currentWayPoint++;
 
-            if(currentWayPoint >= waypoints.Length)
+            if (currentWayPoint >= waypoints.Length)
             {
                 Destroy(gameObject);
             }
@@ -47,6 +55,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        amount = Mathf.Abs(amount);  
         health -= amount;
         if (health <= 0f)
             Die();
@@ -54,7 +63,7 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        CurrencyManager.Instance.AddGold(25);
+        CurrencyManager.Instance.AddGold(goldReward);
         Destroy(gameObject);
     }
 }

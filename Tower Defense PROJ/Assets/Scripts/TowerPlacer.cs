@@ -6,13 +6,13 @@ using UnityEngine.Rendering;
 
 public class TowerPlacer : MonoBehaviour
 {
-    public Tilemap placementMap;
-    public Tilemap nonPlaceableMap;
+    [SerializeField] private Tilemap placementMap;
+    [SerializeField] private Tilemap nonPlaceableMap;
+    [SerializeField] private GameObject ghostPrefab;
 
-    public GameObject ghostPrefab;
-    
     private HashSet<Vector3Int> occupiedTiles = new HashSet<Vector3Int>();
     private GameObject ghostInstance;
+
     void Update()
     {
         HandlePlacementHover();
@@ -21,7 +21,7 @@ public class TowerPlacer : MonoBehaviour
 
     void HandlePlacementHover()
     {
-        if(TowerSelectionUI.SelectedTowerPrefab == null)
+        if (TowerSelectionUI.SelectedTowerPrefab == null)
         {
             if (ghostInstance != null)
                 Destroy(ghostInstance);
@@ -30,56 +30,55 @@ public class TowerPlacer : MonoBehaviour
         if (ghostInstance == null)
             ghostInstance = Instantiate(ghostPrefab);
 
-        ghostInstance.GetComponent<SpriteRenderer>().sprite = TowerSelectionUI.SelectedTowerPrefab.GetComponent<SpriteRenderer>().sprite;
+        ghostInstance.GetComponent<SpriteRenderer>().sprite =
+            TowerSelectionUI.SelectedTowerPrefab.GetComponent<SpriteRenderer>().sprite;
+
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0;
+
+        Vector3Int cellPos = placementMap.WorldToCell(mouseWorldPos);
+        Vector3 worldCenter = placementMap.GetCellCenterWorld(cellPos);
+
+        ghostInstance.transform.position = worldCenter + new Vector3(0, placementMap.cellSize.y * 0.25f);
+
+        bool valid = placementMap.HasTile(cellPos) && !occupiedTiles.Contains(cellPos);
+        ghostInstance.GetComponent<GhostTower>().SetValid(valid);
+    }
+
+    void HandlePlacementClick()
+    {
+        if (!Input.GetMouseButtonDown(0)) return;
+        if (TowerSelectionUI.SelectedTowerPrefab == null) return;
+
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
 
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorldPos.z = 0;
 
         Vector3Int cellPos = placementMap.WorldToCell(mouseWorldPos);
 
-        Vector3 worldCenter = placementMap.GetCellCenterWorld(cellPos);
+        if (!placementMap.HasTile(cellPos)) return;
+        if (occupiedTiles.Contains(cellPos)) return;
 
-        ghostInstance.transform.position = worldCenter + new Vector3(0, placementMap.cellSize.y * 0.25f);
-        
-        bool valid = placementMap.HasTile(cellPos) && !occupiedTiles.Contains(cellPos);
+        GameObject tower = Instantiate(TowerSelectionUI.SelectedTowerPrefab,
+            ghostInstance.transform.position, Quaternion.identity);
 
-        ghostInstance.GetComponent<GhostTower>().SetValid(valid);
+        SetEntityOrder(tower.transform, 500);
+
+        TowerSelectionUI.SelectTower(null); 
+        occupiedTiles.Add(cellPos);
     }
 
-   void HandlePlacementClick()
-{
-    if (!Input.GetMouseButtonDown(0)) return;
-    if (TowerSelectionUI.SelectedTowerPrefab == null) return;
-
-    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-        return;
-
-    Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    mouseWorldPos.z = 0;
-
-    Vector3Int cellPos = placementMap.WorldToCell(mouseWorldPos);
-
-    if (!placementMap.HasTile(cellPos)) return;
-    if (occupiedTiles.Contains(cellPos)) return;
-
-    GameObject tower = Instantiate(TowerSelectionUI.SelectedTowerPrefab,
-        ghostInstance.transform.position, Quaternion.identity);
-
-    SetEntityOrder(tower.transform, 500); 
-
-    TowerSelectionUI.SelectedTowerPrefab = null;
-    occupiedTiles.Add(cellPos);
-}
-void SetEntityOrder(Transform root, int offset)
-{
-    var sortingGroup = root.GetComponent<SortingGroup>();
-    if (sortingGroup != null)
+    void SetEntityOrder(Transform root, int offset)
     {
-        sortingGroup.sortingOrder = offset - (int)(root.position.y * 100);
-        return;
+        var sortingGroup = root.GetComponent<SortingGroup>();
+        if (sortingGroup != null)
+        {
+            sortingGroup.sortingOrder = offset - (int)(root.position.y * 100);
+            return;
+        }
+        foreach (var sr in root.GetComponentsInChildren<SpriteRenderer>())
+            sr.sortingOrder = offset - (int)(root.position.y * 100);
     }
-    // fallback
-    foreach (var sr in root.GetComponentsInChildren<SpriteRenderer>())
-        sr.sortingOrder = offset - (int)(root.position.y * 100);
-}
 }

@@ -2,16 +2,15 @@ using UnityEngine;
 
 public class TowerSelectionUI : MonoBehaviour
 {
-    public static GameObject SelectedTowerPrefab;
+   private static GameObject selectedTowerPrefab; 
 
-    public void SelectTower(GameObject towerPrefab)
+    public static void SelectTower(GameObject prefab)
     {
-        if(towerPrefab == SelectedTowerPrefab)
-        {
-            SelectedTowerPrefab = null;
-            return;
-        }
+        selectedTowerPrefab = prefab;
+    }
 
-        SelectedTowerPrefab = towerPrefab;
+    public static GameObject SelectedTowerPrefab
+    {
+        get { return selectedTowerPrefab; }
     }
 }

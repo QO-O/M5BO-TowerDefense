@@ -5,26 +5,45 @@ using System.Collections;
 [System.Serializable]
 public class WaveData
 {
-    public float duration = 10f;
-    public float easySpawnInterval = 2f;
-    public float hardSpawnInterval = 3f;
-    public int easyEnemies = 5;
-    public int hardEnemies = 2;
+    [SerializeField] private float duration = 10f;
+    [SerializeField] private float easySpawnInterval = 2f;
+    [SerializeField] private float hardSpawnInterval = 3f;
+    [SerializeField] private int easyEnemies = 5;
+    [SerializeField] private int hardEnemies = 2;
+
+    public float Duration { get { return duration; } }
+    public float EasySpawnInterval { get { return easySpawnInterval; } }
+    public float HardSpawnInterval { get { return hardSpawnInterval; } }
+    public int EasyEnemies { get { return easyEnemies; } }
+    public int HardEnemies { get { return hardEnemies; } }
 }
 
 public class WaveManager : MonoBehaviour
 {
-    public WaveData[] waves;
-    public Button startWaveButton;
-
-    public GameObject easyEnemyPrefab;
-    public GameObject hardEnemyPrefab;
+    [SerializeField] private WaveData[] waves;
+    [SerializeField] private Button startWaveButton;
+    [SerializeField] private GameObject easyEnemyPrefab;
+    [SerializeField] private GameObject hardEnemyPrefab;
+    [SerializeField] private SpawnRoute[] routes;
+    [SerializeField] private TMPro.TextMeshProUGUI waveText;
 
     private int currentWaveIndex = 0;
     private bool waveRunning = false;
 
-    public TMPro.TextMeshProUGUI waveText;
-   
+    [System.Serializable]
+    public class SpawnRoute
+    {
+        [SerializeField] private Transform spawnPoint;
+        [SerializeField] private Transform[] waypoints;
+
+        public Transform SpawnPoint { get { return spawnPoint; } }
+        public Transform[] Waypoints { get { return waypoints; } }
+    }
+
+    public int CurrentWaveIndex { get { return currentWaveIndex; } }
+    public int TotalWaves { get { return waves != null ? waves.Length : 0; } }
+    public bool WaveRunning { get { return waveRunning; } }
+
     void Start()
     {
         startWaveButton.onClick.AddListener(StartWave);
@@ -33,54 +52,41 @@ public class WaveManager : MonoBehaviour
 
     public void StartWave()
     {
-        Debug.Log($"StartWave clicked. waveRunning={waveRunning}, currentWaveIndex={currentWaveIndex}, waves.Length={waves.Length}");
         if (waveRunning) return;
-        if (currentWaveIndex >=waves.Length) return;
-
+        if (currentWaveIndex >= waves.Length) return;
         StartCoroutine(RunWave());
     }
 
-   IEnumerator RunWave()
-{
-    waveRunning = true;
-    startWaveButton.interactable = false;
-    UpdateWaveText();
-
-    WaveData wave = waves[currentWaveIndex];
-
-    for (int i = 0; i < wave.easyEnemies; i++)
+    IEnumerator RunWave()
     {
-        SpawnEnemy(easyEnemyPrefab);
-        yield return new WaitForSeconds(wave.easySpawnInterval);
-    }
-    for (int i = 0; i < wave.hardEnemies; i++)
-    {
-        SpawnEnemy(hardEnemyPrefab);
-        yield return new WaitForSeconds(wave.hardSpawnInterval);
-    }
-    yield return new WaitForSeconds(wave.duration / 3);
+        waveRunning = true;
+        startWaveButton.interactable = false;
+        UpdateWaveText();
 
-    waveRunning = false;
-    startWaveButton.interactable = true;
-    currentWaveIndex++;
-}
+        WaveData wave = waves[currentWaveIndex];
 
-    [System.Serializable]
-    public class SpawnRoute
-    {
-        public Transform spawnPoint;
-        public Transform[] waypoints;
+        for (int i = 0; i < wave.EasyEnemies; i++)
+        {
+            SpawnEnemy(easyEnemyPrefab);
+            yield return new WaitForSeconds(wave.EasySpawnInterval);
+        }
+        for (int i = 0; i < wave.HardEnemies; i++)
+        {
+            SpawnEnemy(hardEnemyPrefab);
+            yield return new WaitForSeconds(wave.HardSpawnInterval);
+        }
+        yield return new WaitForSeconds(wave.Duration / 3);
+        waveRunning = false;
+        startWaveButton.interactable = true;
+        currentWaveIndex++;
+        UpdateWaveText();
     }
-    public SpawnRoute[] routes;
 
     void SpawnEnemy(GameObject prefab)
     {
-        Debug.Log($"SpawnEnemy called with {prefab?.name}");
         SpawnRoute route = routes[Random.Range(0, routes.Length)];
-        Debug.Log($"Spawning at route: {route?.spawnPoint?.name}, position {route?.spawnPoint?.position}");
-        GameObject e = Instantiate(prefab, route.spawnPoint.position, Quaternion.identity);
-        e.GetComponent<Enemy>().waypoints = route.waypoints;
-        Debug.Log($"Spawned: {e.name} at {e.transform.position}");
+        GameObject e = Instantiate(prefab, route.SpawnPoint.position, Quaternion.identity);
+        e.GetComponent<Enemy>().SetRoute(route.Waypoints);
     }
 
     void UpdateWaveText()

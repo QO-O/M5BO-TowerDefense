@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed = 8f;
+    [SerializeField] private float speed = 8f;
+    [SerializeField] private float damage = 1f;
+
     private Enemy target;
-    private float damage;
 
     public void Launch(Enemy target, float damage)
     {
         this.target = target;
-        this.damage = damage;
+        this.damage = Mathf.Abs(damage);
     }
 
     void Update()

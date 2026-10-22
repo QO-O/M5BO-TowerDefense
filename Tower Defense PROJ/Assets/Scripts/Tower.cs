@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    public float range = 3f;
-    public float fireInterval = 1f;   // seconds between shots
-    public float damage = 1f;
-    public GameObject projectilePrefab;
+    [SerializeField] private float range = 3f;
+    [SerializeField] private float fireInterval = 1f;
+    [SerializeField] private float damage = 1f;
+    [SerializeField] private GameObject projectilePrefab;
 
     private float fireTimer;
 
@@ -39,5 +39,11 @@ public class Tower : MonoBehaviour
             }
         }
         return best;
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, range);
     }
 }

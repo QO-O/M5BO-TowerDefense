@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class GhostTower : MonoBehaviour
 {
-    SpriteRenderer sr;
+    private SpriteRenderer sr;
 
     private void Awake()
     {
