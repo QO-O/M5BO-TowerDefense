@@ -2,12 +2,38 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    [SerializeField] private float range = 3f;
+   [SerializeField] private float range = 3f;
     [SerializeField] private float fireInterval = 1f;
     [SerializeField] private float damage = 1f;
     [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private float maxHealth = 20f;    // NEW
 
     private float fireTimer;
+    private Vector3Int myCell;
+    private float health;
+
+    public void Initialize(Vector3Int cell)
+    {
+        myCell = cell;
+    }
+
+    void Awake()
+    {
+        health = maxHealth;
+    }
+
+    public void TakeDamage(float amount)
+    {
+        health -= Mathf.Abs(amount);
+        if (health <= 0f) DestroyTower();
+    }
+
+    void DestroyTower()
+    {
+        if (TowerPlacer.Instance != null)
+            TowerPlacer.Instance.FreeTile(myCell);
+        Destroy(gameObject);
+    }
 
     void Update()
     {

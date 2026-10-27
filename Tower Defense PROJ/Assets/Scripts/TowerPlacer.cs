@@ -63,12 +63,25 @@ public class TowerPlacer : MonoBehaviour
 
         GameObject tower = Instantiate(TowerSelectionUI.SelectedTowerPrefab,
             ghostInstance.transform.position, Quaternion.identity);
-
+        
+        tower.GetComponent<Tower>().Initialize(cellPos);
+        
         SetEntityOrder(tower.transform, 500);
 
         TowerSelectionUI.SelectTower(null); 
         occupiedTiles.Add(cellPos);
+        
     }
+
+    private static TowerPlacer instance;
+    public static TowerPlacer Instance { get { return instance; } }
+
+    void Awake() { if (instance == null) instance = this; }
+
+    public void FreeTile(Vector3Int cell)
+        {
+            occupiedTiles.Remove(cell);
+        }
 
     void SetEntityOrder(Transform root, int offset)
     {

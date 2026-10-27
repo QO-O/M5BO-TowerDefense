@@ -2,27 +2,48 @@ using UnityEngine;
 
 public class CurrencyManager : MonoBehaviour
 {
-    public static CurrencyManager Instance;
-    public int gold = 50;
+    // Singleton: private backing + read-only property (was a public variable)
+    private static CurrencyManager instance;
+    public static CurrencyManager Instance { get { return instance; } }
 
-     public TMPro.TextMeshProUGUI currencyText;
+    [SerializeField] private int startingGold = 50;
+    [SerializeField] private TMPro.TextMeshProUGUI currencyText;
+
+    private int gold;
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (instance == null)
+        {
+            instance = this;
+            gold = Mathf.Abs(startingGold);
+            UpdateCurrencyUI();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    public void AddGold(int amount) { gold += amount; UpdateCurrencyUI(); }
+    public void AddGold(int amount)
+    {
+        gold += Mathf.Abs(amount);
+        UpdateCurrencyUI();
+    }
+
     public bool TrySpendGold(int amount)
     {
+        amount = Mathf.Abs(amount); 
         if (gold < amount) return false;
-        gold -= amount; UpdateCurrencyUI(); return true;
+        gold -= amount;
+        UpdateCurrencyUI();
+        return true;
     }
+    public int Gold { get { return gold; } }
 
-    void UpdateCurrencyUI() 
-    {  
+    void UpdateCurrencyUI()
+    {
         if (currencyText == null) return;
-       currencyText.text = $"{gold}";
+        currencyText.text = $"{gold}";
     }
 }

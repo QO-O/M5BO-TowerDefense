@@ -5,10 +5,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float speed = 2f;
     [SerializeField] private float maxHealth = 3f;
     [SerializeField] private int goldReward = 25;
+    [SerializeField] private float baseDamage = 5f;
+    [SerializeField] private float attackInterval = 1f;
 
     private int currentWayPoint = 0;
     private Transform[] waypoints;
     private float health;
+     private float attackTimer = 0f;
+    private bool attackingBase = false;
 
     public void SetRoute(Transform[] path)
     {
@@ -24,12 +28,26 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        Debug.Log($"{name}: waypoints count = {(waypoints != null ? waypoints.Length : -1)}");
+    
     }
 
     void Update()
     {
         if (waypoints == null || waypoints.Length == 0) return;
+
+        if (attackingBase)
+        {
+            attackTimer += Time.deltaTime;
+            if (attackTimer >= attackInterval)
+            {
+                attackTimer = 0f;
+                if (HomeBase.Instance != null)
+                    HomeBase.Instance.TakeDamage(baseDamage);
+                else
+                    Debug.Log($"{name}: reached base but HomeBase.Instance is NULL!");
+            }
+            return;
+        }
 
         Transform target = waypoints[currentWayPoint];
         Vector3 dir = (target.position - transform.position).normalized;
@@ -42,15 +60,9 @@ public class Enemy : MonoBehaviour
 
             if (currentWayPoint >= waypoints.Length)
             {
-                Destroy(gameObject);
+                attackingBase = true;
             }
         }
-
-        //     if (Input.GetKeyDown(KeyCode.K))
-        // {
-        //     foreach (Enemy e in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
-        //         e.TakeDamage(1f);
-        // }
     }
 
     public void TakeDamage(float amount)

@@ -95,4 +95,22 @@ public class WaveManager : MonoBehaviour
         if (currentWaveIndex >= waves.Length) { waveText.text = "All waves cleared!"; return; }
         waveText.text = $"Wave {currentWaveIndex + 1}/{waves.Length}";
     }
+
+    public class WinChecker : MonoBehaviour
+    {
+        [SerializeField] private WaveManager waveManager;
+        [SerializeField] private GameObject winScreen;
+
+        private bool won = false;
+
+        void Update()
+        {
+            if (won) return;
+            if (!waveManager.WaveRunning && waveManager.CurrentWaveIndex >= waveManager.TotalWaves)
+            {
+                won = true;
+                if (winScreen != null) winScreen.SetActive(true);
+            }
+        }
+    }
 }
