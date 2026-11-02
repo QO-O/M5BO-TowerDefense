@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Tower
   - 
   - 
   - 
@@ -43,6 +43,9 @@ TagManager:
     locked: 0
   - name: Ghost
     uniqueID: 2911829263
+    locked: 0
+  - name: Tower
+    uniqueID: 240596885
     locked: 0
   - name: Entities
     uniqueID: 2892246675

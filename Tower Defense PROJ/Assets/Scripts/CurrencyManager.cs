@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class CurrencyManager : MonoBehaviour
 {
-    // Singleton: private backing + read-only property (was a public variable)
     private static CurrencyManager instance;
     public static CurrencyManager Instance { get { return instance; } }
 

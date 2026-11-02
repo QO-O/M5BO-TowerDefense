@@ -80,7 +80,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -1402720621
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -3618634773991606764, guid: bda52cd567c228b43909b985df2be198, type: 3}
@@ -105,8 +105,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e30922ba8534a78449a6db6c3b4d3c96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  speed: 1.75
-  waypoints: []
+  speed: 1.5
+  maxHealth: 20
+  goldReward: 50
+  baseDamage: 5
+  attackInterval: 1
+  towerDetectRange: 2
+  towerDamage: 2
 --- !u!210 &1817199221567553483
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -116,7 +121,7 @@ SortingGroup:
   m_GameObject: {fileID: 8958767976038371107}
   m_Enabled: 1
   m_SortingLayerID: -1402720621
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0

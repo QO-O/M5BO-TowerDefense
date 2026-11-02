@@ -30,11 +30,14 @@ public class TesterTools : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.T))
             foreach (Tower t in FindObjectsByType<Tower>(FindObjectsSortMode.None))
                 t.TakeDamage(1000f);
+       
+        if (Input.GetKeyDown(KeyCode.M))
+            CurrencyManager.Instance.AddGold(500);
     }
 
     void UpdateStatsText()
     {
         if (statsText == null) return;
-        statsText.text = $"FPS: {fps:0} | Enemies: {enemyCount} |  | E: dmg enemies | T: kill towers";
+        statsText.text = $"FPS: {fps:0} | Enemies: {enemyCount} |  | E: dmg enemies | T: kill towers | M: +500 currency";
     }
 }

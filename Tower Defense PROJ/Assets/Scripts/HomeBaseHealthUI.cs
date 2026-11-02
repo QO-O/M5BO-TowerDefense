@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class BaseHealthUI : MonoBehaviour
+public class HomeBaseHealthUI : MonoBehaviour
 {
     [SerializeField] private HomeBase homeBase;
     [SerializeField] private TextMeshProUGUI healthText;

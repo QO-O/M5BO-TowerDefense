@@ -8,6 +8,11 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float baseDamage = 5f;
     [SerializeField] private float attackInterval = 1f;
 
+    [SerializeField] private float towerDetectRange = 1.2f;
+    [SerializeField] private float towerDamage = 2f;
+
+    private Tower targetTower;
+
     private int currentWayPoint = 0;
     private Transform[] waypoints;
     private float health;
@@ -49,6 +54,30 @@ public class Enemy : MonoBehaviour
             return;
         }
 
+         if (targetTower != null)
+        {
+            attackTimer += Time.deltaTime;
+            if (attackTimer >= attackInterval)
+            {
+                attackTimer = 0f;
+                targetTower.TakeDamage(towerDamage);
+                if (targetTower == null) attackTimer = 0f;
+            }
+            return;
+        }
+
+    Collider2D hit = Physics2D.OverlapCircle(transform.position, towerDetectRange, LayerMask.GetMask("Tower"));
+    if (hit != null)
+    {
+        Tower t = hit.GetComponent<Tower>();
+        if (t != null)
+        {
+            targetTower = t;
+            attackTimer = 0f;
+            return;
+        }
+    }
+
         Transform target = waypoints[currentWayPoint];
         Vector3 dir = (target.position - transform.position).normalized;
 
@@ -77,5 +106,11 @@ public class Enemy : MonoBehaviour
     {
         CurrencyManager.Instance.AddGold(goldReward);
         Destroy(gameObject);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, towerDetectRange);
     }
 }
